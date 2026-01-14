@@ -1,0 +1,26 @@
+{
+  "name": "todo-list-app",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun run --cwd packages/backend dev & bun run --cwd packages/frontend dev",
+    "dev:frontend": "bun run --cwd packages/frontend dev",
+    "dev:backend": "bun run --cwd packages/backend dev",
+    "build": "bun run --cwd packages/frontend build",
+    "db:generate": "bunx prisma generate --schema=./prisma/schema.prisma",
+    "db:migrate": "bunx prisma migrate dev --schema=./prisma/schema.prisma",
+    "db:push": "bunx prisma db push --schema=./prisma/schema.prisma",
+    "db:studio": "bunx prisma studio --schema=./prisma/schema.prisma",
+    "docker:dev": "docker compose -f docker/docker-compose.dev.yml up -d",
+    "docker:prod": "docker compose -f docker/docker-compose.yml up -d --build",
+    "docker:down": "docker compose -f docker/docker-compose.yml down"
+  },
+  "devDependencies": {
+    "prisma": "5.22.0"
+  },
+  "dependencies": {
+    "@prisma/client": "5.22.0"
+  }
+}
