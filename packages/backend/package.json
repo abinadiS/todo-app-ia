@@ -11,6 +11,7 @@
     "@clerk/express": "^1.2.0",
     "ai": "^3.4.0",
     "@ai-sdk/google": "^0.0.55",
+    "@ai-sdk/openai": "^0.0.66",
     "zod": "^3.23.0",
     "cors": "^2.8.5",
     "helmet": "^7.1.0",

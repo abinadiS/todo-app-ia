@@ -9,6 +9,7 @@ const envSchema = z.object({
   CLERK_SECRET_KEY: z.string().optional(),
 
   // AI Provider
+  AI_PROVIDER: z.enum(['openai', 'gemini']).default('gemini'),
   OPENAI_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   GOOGLE_GENERATIVE_AI_API_KEY: z.string().optional(),

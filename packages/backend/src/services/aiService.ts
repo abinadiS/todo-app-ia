@@ -1,8 +1,10 @@
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
+import { openai } from '@ai-sdk/openai';
 import type { Task } from '@prisma/client';
 import { AIProviderError } from '../utils/errors';
 import { logger } from '../utils/logger';
+import { config } from '../config';
 
 export interface TaskSummaryResult {
   summary: string;
@@ -22,8 +24,14 @@ export interface DescriptionCompletion {
 }
 
 export class AIService {
-  // Usar la funcion google() para crear el modelo - segun AI SDK docs
-  private model = google('gemini-2.0-flash');
+  // Seleccionar modelo basado en AI_PROVIDER (openai o gemini)
+  private provider = config.AI_PROVIDER;
+
+  private get model() {
+    return this.provider === 'openai'
+      ? openai('gpt-4o-mini')
+      : google('gemini-2.0-flash');
+  }
 
   // Limpiar respuesta de markdown code blocks
   private cleanJsonResponse(text: string): string {
@@ -69,7 +77,7 @@ Respond ONLY with valid JSON in this format:
     } catch (error) {
       logger.error('AI Summary generation failed:', error);
       throw new AIProviderError(
-        'google',
+        this.provider,
         error instanceof Error ? error.message : 'Unknown error'
       );
     }
@@ -110,7 +118,7 @@ Respond ONLY with valid JSON array:
     } catch (error) {
       logger.error('AI Priority suggestion failed:', error);
       throw new AIProviderError(
-        'google',
+        this.provider,
         error instanceof Error ? error.message : 'Unknown error'
       );
     }
@@ -137,7 +145,7 @@ The confidence should be 0.0-1.0 based on how clear the title was.`,
     } catch (error) {
       logger.error('AI Description completion failed:', error);
       throw new AIProviderError(
-        'google',
+        this.provider,
         error instanceof Error ? error.message : 'Unknown error'
       );
     }
