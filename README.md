@@ -20,7 +20,6 @@ Aplicación de gestión de tareas full-stack con integración de IA para product
 
 ### Infraestructura
 - **Contenedores**: Docker + Docker Compose
-- **Despliegue**: Railway
 
 ## Estructura del Proyecto
 
@@ -220,51 +219,6 @@ Todas las rutas `/api/*` requieren autenticación via Clerk.
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
 | GET | `/health` | Estado del servidor |
-
-## Despliegue en Railway
-
-### 1. Preparar el proyecto
-
-```bash
-# Asegurarse que .env está en .gitignore
-git add .
-git commit -m "Prepare for Railway deployment"
-git push origin main
-```
-
-### 2. Configurar Clerk para Producción
-
-1. En [Clerk Dashboard](https://dashboard.clerk.com/), crear una app en modo **Production**
-2. Copiar las keys de producción (`sk_live_...`, `pk_live_...`)
-3. En Settings > Domains, agregar las URLs de Railway a "Allowed Origins"
-
-### 3. Crear Proyecto en Railway
-
-1. Ir a [Railway](https://railway.app/)
-2. Crear nuevo proyecto desde GitHub
-3. Agregar servicio PostgreSQL
-4. Configurar variables de entorno:
-
-```env
-# Base de datos (automático con PostgreSQL plugin)
-DATABASE_URL=postgresql://...
-
-# Clerk (keys de producción)
-CLERK_SECRET_KEY=sk_live_...
-VITE_CLERK_PUBLISHABLE_KEY=pk_live_...
-
-# IA
-AI_PROVIDER=openai
-OPENAI_API_KEY=sk-...
-
-# URLs (Railway las genera automáticamente)
-CORS_ORIGIN=https://tu-frontend.up.railway.app
-VITE_API_URL=https://tu-backend.up.railway.app
-```
-
-### 4. Desplegar
-
-Railway detectará automáticamente el `docker-compose.yml` y desplegará los servicios.
 
 ## Desarrollo
 
