@@ -1,19 +1,24 @@
-import { Plus, Sparkles, Loader2 } from 'lucide-react';
+import { Plus, Sparkles, Loader2, Zap } from 'lucide-react';
 import { TaskList } from './TaskList';
 import { TaskForm } from './TaskForm';
 import { AISummary } from './AISummary';
 import { useTaskStore } from '../../store/taskStore';
-import { useTaskSummary } from '../../hooks/useAI';
+import { useTaskSummary, useSuggestPriorities } from '../../hooks/useAI';
 import { useState } from 'react';
 
 export function TasksPage() {
   const { openForm, isFormOpen } = useTaskStore();
   const taskSummary = useTaskSummary();
+  const suggestPriorities = useSuggestPriorities();
   const [showSummary, setShowSummary] = useState(false);
 
   const handleGetSummary = async () => {
     setShowSummary(true);
     taskSummary.mutate();
+  };
+
+  const handleSuggestPriorities = () => {
+    suggestPriorities.mutate(undefined);
   };
 
   return (
@@ -33,6 +38,18 @@ export function TasksPage() {
               <Sparkles className="h-4 w-4" />
             )}
             AI Summary
+          </button>
+          <button
+            onClick={handleSuggestPriorities}
+            disabled={suggestPriorities.isPending}
+            className="btn btn-secondary btn-md flex items-center gap-2"
+          >
+            {suggestPriorities.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Zap className="h-4 w-4" />
+            )}
+            AI Priorities
           </button>
           <button
             onClick={() => openForm()}
