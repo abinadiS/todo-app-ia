@@ -44,7 +44,7 @@ export class AIService {
   async generateTaskSummary(tasks: Task[]): Promise<TaskSummaryResult> {
     if (tasks.length === 0) {
       return {
-        summary: 'No pending tasks. You are all caught up!',
+        summary: 'No hay tareas pendientes. ¡Estás al día!',
         totalPending: 0,
       };
     }
@@ -56,15 +56,15 @@ export class AIService {
 
       const { text } = await generateText({
         model: this.model,
-        prompt: `Analyze these pending tasks and generate a JSON response with a summary and estimated time.
+        prompt: `Analiza estas tareas pendientes y genera una respuesta JSON con un resumen y tiempo estimado. Responde siempre en español.
 
-Tasks:
+Tareas:
 ${taskList}
 
-Respond ONLY with valid JSON in this format:
+Responde SOLO con JSON válido en este formato:
 {
-  "summary": "Brief 2-3 sentence summary of what needs to be done",
-  "estimatedTime": "Estimated total time like '2-3 hours' or '1 day'"
+  "summary": "Resumen breve de 2-3 oraciones sobre lo que hay que hacer",
+  "estimatedTime": "Tiempo total estimado como '2-3 horas' o '1 día'"
 }`,
       });
 
@@ -95,17 +95,19 @@ Respond ONLY with valid JSON in this format:
 
       const { text } = await generateText({
         model: this.model,
-        prompt: `Analyze these tasks and suggest priorities (LOW, MEDIUM, HIGH, URGENT) based on:
-- Urgency indicators in the title/description
-- Dependencies or blockers mentioned
-- Business impact
+        prompt: `Analiza estas tareas y sugiere prioridades (LOW, MEDIUM, HIGH, URGENT) basándote en:
+- Indicadores de urgencia en el título/descripción
+- Dependencias o bloqueos mencionados
+- Impacto en el negocio
 
-Tasks:
+Responde siempre en español.
+
+Tareas:
 ${taskList}
 
-Respond ONLY with valid JSON array:
+Responde SOLO con un array JSON válido:
 [
-  { "index": 0, "priority": "HIGH", "reason": "Brief reason" }
+  { "index": 0, "priority": "HIGH", "reason": "Razón breve en español" }
 ]`,
       });
 
@@ -128,17 +130,17 @@ Respond ONLY with valid JSON array:
     try {
       const { text } = await generateText({
         model: this.model,
-        prompt: `Given this task title, generate a helpful task description (2-4 sentences) that clarifies what needs to be done.
+        prompt: `Dado este título de tarea, genera una descripción útil (2-4 oraciones) que aclare lo que hay que hacer. Responde siempre en español.
 
-Title: "${title}"
+Título: "${title}"
 
-Respond ONLY with valid JSON:
+Responde SOLO con JSON válido:
 {
-  "description": "Detailed task description",
+  "description": "Descripción detallada de la tarea en español",
   "confidence": 0.8
 }
 
-The confidence should be 0.0-1.0 based on how clear the title was.`,
+El confidence debe ser 0.0-1.0 basado en qué tan claro era el título.`,
       });
 
       return JSON.parse(this.cleanJsonResponse(text));
