@@ -1,7 +1,8 @@
-import { clerkMiddleware, getAuth, requireAuth } from '@clerk/express';
+import { clerkMiddleware, getAuth } from '@clerk/express';
 import type { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { UnauthorizedError } from '../utils/errors';
+import { logger } from '../utils/logger';
 
 // Initialize Clerk middleware
 export const clerkAuthMiddleware = clerkMiddleware();
@@ -24,21 +25,28 @@ export function requireAuthMiddleware(prisma: PrismaClient) {
         where: { id: auth.userId },
       });
 
-      if (!existingUser && auth.sessionClaims?.email) {
+      if (!existingUser) {
+        // Get email from session claims (try different possible locations)
+        const email =
+          (auth.sessionClaims?.email as string) ||
+          (auth.sessionClaims?.primary_email as string) ||
+          (auth.sessionClaims?.email_address as string) ||
+          `${auth.userId}@clerk.user`;
+
+        logger.info(`Creating new user: ${auth.userId} with email: ${email}`);
+
         await prisma.user.create({
           data: {
             id: auth.userId,
-            email: auth.sessionClaims.email as string,
+            email: email,
           },
         });
       }
 
       next();
     } catch (error) {
+      logger.error('Auth middleware error:', error);
       next(error);
     }
   };
 }
-
-// Export requireAuth from Clerk for route-level protection
-export { requireAuth };

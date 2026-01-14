@@ -7,25 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum TaskStatus {
-  PENDING
-  IN_PROGRESS
-  COMPLETED
-}
-
-enum TaskPriority {
-  LOW
-  MEDIUM
-  HIGH
-  URGENT
-}
-
 model User {
-  id        String   @id // Clerk user ID
+  id        String   @id
   email     String   @unique
-  tasks     Task[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tasks     Task[]
 
   @@map("users")
 }
@@ -33,22 +20,16 @@ model User {
 model Task {
   id              String        @id @default(uuid())
   title           String        @db.VarChar(255)
-  description     String?       @db.Text
+  description     String?
   status          TaskStatus    @default(PENDING)
-
-  // AI-generated fields
   aiPriority      TaskPriority?
-  aiSummary       String?       @db.Text
-  aiGeneratedDesc String?       @db.Text
-
-  // User relationship
+  aiSummary       String?
+  aiGeneratedDesc String?
   userId          String
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // Timestamps
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-  deletedAt       DateTime?     // Soft delete
+  deletedAt       DateTime?
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([status])
@@ -68,4 +49,17 @@ model AICache {
   @@index([cacheKey])
   @@index([expiresAt])
   @@map("ai_cache")
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }
